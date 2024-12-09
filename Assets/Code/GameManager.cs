@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject panelSave;
     [SerializeField] GameObject panelLibraryMarker;
     [SerializeField] GameObject panelManual;
+    [SerializeField] GameObject panelShowMarker;
+    [SerializeField] GameObject panelShowSaved;
 
     [Header("================== PANEL PROPERTY ==================")]
     [SerializeField] Animator DisplayScreening;
@@ -36,7 +38,9 @@ public class GameManager : MonoBehaviour
             { "Screening", panelScreening },
             { "Save", panelSave },
             { "LibraryMarker", panelLibraryMarker },
-            { "Manual", panelManual }
+            { "Manual", panelManual },
+            { "ShowMarker", panelShowMarker },
+            { "ShowSaved", panelShowSaved },
         };
     }
 

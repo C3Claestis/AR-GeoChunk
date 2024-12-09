@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,21 +14,52 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject panelManual;
     [SerializeField] GameObject panelShowMarker;
     [SerializeField] GameObject panelShowSaved;
-
-    [Header("================== PANEL PROPERTY ==================")]
     [SerializeField] Animator DisplayScreening;
+
+    [Header("================== Display PROPERTY ==================")]
+    [SerializeField] Image buttonDisplaySetting;
+    [SerializeField] Image buttonDisplayDeskripsi;
+
+    [Header("================== 3D PROPERTY ==================")]
+    [SerializeField] Animator riverObj;
+    [SerializeField] Animator beachObj;
+    [SerializeField] Animator iceburgObj;
+
+    [Header("================== SAVED PANEL PROPERTY ==================")]
+    [SerializeField] Button beachSaveBtn;
+    [SerializeField] Button riverSaveBtn;
+    [SerializeField] Button iceSaveBtn;
+    [SerializeField] Sprite riverSprite;
+    [SerializeField] Sprite beachSprite;
+    [SerializeField] Sprite iceSprite;
+
+    [Header("================== DESKRIPSI SCREENING PROPERTY ==================")]
+    [SerializeField] Text tittledeskripsiTxt;
+    [SerializeField] Text deskripsiTxt;
+    [SerializeField][TextArea(1, 10)] string riverDescID;
+    [SerializeField][TextArea(1, 10)] string riverDescEN;
+
+    [SerializeField][TextArea(1, 10)] string beachDescID;
+    [SerializeField][TextArea(1, 10)] string beachDescEN;
+
+    [SerializeField][TextArea(1, 10)] string iceDescID;
+    [SerializeField][TextArea(1, 10)] string iceDescEN;
 
     [Header("================== GLOBAL PROPERTY ==================")]
     [SerializeField] GameObject cameraAr;
     [SerializeField] GameObject buttonHoverScreen;
+    [SerializeField] UISwitcher.UISwitcher animSwitch;
+    [SerializeField] UISwitcher.UISwitcher rotateSwitch;
+    [SerializeField] private float rotationSpeed = 30f;
 
     // Dictionary untuk mapping nama panel ke GameObject
     private Dictionary<string, GameObject> panelDictionary;
+    private string OpenDeskripsi;
     private bool displayScreen = false;
     private bool isAnimating = false;
-    private bool isSwitchingPanel = false; // Flag untuk mencegah pergantian panel selama jeda waktu
+    private bool isSwitchingPanel = false;
+    private Coroutine rotationCoroutine;
 
-    // Start is called before the first frame update
     void Start()
     {
         // Inisialisasi dictionary
@@ -44,6 +76,62 @@ public class GameManager : MonoBehaviour
         };
     }
 
+    void Update()
+    {
+        if(Input.GetKey(KeyCode.Space)){
+            PlayerPrefs.DeleteAll();
+        }
+    }
+    #region Switch Display Screen
+    public void SetSwitchAnim()
+    {
+        riverObj.SetBool("PlayAnim", animSwitch.isOn);
+        beachObj.SetBool("PlayAnim", animSwitch.isOn);
+        iceburgObj.SetBool("PlayAnim", animSwitch.isOn);
+    }
+
+    public void SetSwitchRotation()
+    {
+        if (rotateSwitch.isOn)
+        {
+            StartRotation();
+        }
+        else
+        {
+            StopRotation();
+        }
+    }
+    #endregion
+
+    #region Saving
+    public void SetSave(string nameData)
+    {
+        PlayerPrefs.SetInt(nameData, 1);
+    }
+
+    public void OpenSavePanel()
+    {
+        if (PlayerPrefs.GetInt("River") == 1)
+        {
+            riverSaveBtn.gameObject.name = "River";
+            riverSaveBtn.GetComponent<Transform>().GetChild(0).GetComponent<Image>().sprite = riverSprite;
+        }
+
+        if (PlayerPrefs.GetInt("Beach") == 1)
+        {
+            beachSaveBtn.gameObject.name = "Beach";
+            beachSaveBtn.GetComponent<Transform>().GetChild(0).GetComponent<Image>().sprite = beachSprite;
+        }
+
+        if (PlayerPrefs.GetInt("Iceberg") == 1)
+        {
+            iceSaveBtn.gameObject.name = "Ice";
+            iceSaveBtn.GetComponent<Transform>().GetChild(0).GetComponent<Image>().sprite = iceSprite;
+        }
+    }
+    #endregion
+
+    #region ScreenDisplay
     // Fungsi dipanggil melalui tombol
     public void OnButton(string panelName)
     {
@@ -93,6 +181,75 @@ public class GameManager : MonoBehaviour
 
         isAnimating = false; // Animasi selesai, reset flag
     }
+
+    public void ButtonDisplayScreenDisplaySetting()
+    {
+        buttonDisplayDeskripsi.type = Image.Type.Sliced;
+        buttonDisplaySetting.type = Image.Type.Simple;
+    }
+
+    public void ButtonDisplayScreenDisplayDeskripsi()
+    {
+        buttonDisplayDeskripsi.type = Image.Type.Simple;
+        buttonDisplaySetting.type = Image.Type.Sliced;
+    }
+
+    //Overloading ke EventButton
+    public void SetDeskripsiTxt(string name)
+    {
+        OpenDeskripsi = name;
+
+        if (OpenDeskripsi == "River")
+        {
+            tittledeskripsiTxt.text = "River";
+            deskripsiTxt.text = riverDescID;
+        }
+        else if (OpenDeskripsi == "Beach")
+        {
+            tittledeskripsiTxt.text = "Beach";
+            deskripsiTxt.text = beachDescID;
+        }
+        else if (OpenDeskripsi == "Iceberg")
+        {
+            tittledeskripsiTxt.text = "IceBerg";
+            deskripsiTxt.text = iceDescID;
+        }
+    }
+    #endregion
+
+    #region Rotate 3D
+    // Coroutine untuk merotasi objek
+    private IEnumerator RotateContinuously()
+    {
+        while (true)
+        {
+            riverObj.transform.Rotate(0, rotationSpeed * Time.deltaTime, 0);
+            beachObj.transform.Rotate(0, rotationSpeed * Time.deltaTime, 0);
+            iceburgObj.transform.Rotate(0, rotationSpeed * Time.deltaTime, 0);
+
+            yield return null; // Tunggu frame berikutnya
+        }
+    }
+
+    // Mulai rotasi
+    private void StartRotation()
+    {
+        if (rotationCoroutine == null)
+        {
+            rotationCoroutine = StartCoroutine(RotateContinuously());
+        }
+    }
+
+    // Berhenti rotasi
+    private void StopRotation()
+    {
+        if (rotationCoroutine != null)
+        {
+            StopCoroutine(rotationCoroutine);
+            rotationCoroutine = null;
+        }
+    }
+    #endregion
 
     /// <summary>
     /// Fungsi untuk mengatur panel mana yang aktif setelah jeda waktu.

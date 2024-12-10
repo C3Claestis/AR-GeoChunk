@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,6 +20,8 @@ public class GameManager : MonoBehaviour
     [Header("================== Display PROPERTY ==================")]
     [SerializeField] Image buttonDisplaySetting;
     [SerializeField] Image buttonDisplayDeskripsi;
+    [SerializeField] GameObject idTxt;
+    [SerializeField] GameObject enTxt;
 
     [Header("================== 3D PROPERTY ==================")]
     [SerializeField] Animator riverObj;
@@ -50,6 +53,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject buttonHoverScreen;
     [SerializeField] UISwitcher.UISwitcher animSwitch;
     [SerializeField] UISwitcher.UISwitcher rotateSwitch;
+    [SerializeField] UISwitcher.UISwitcher switchLanguage;
     [SerializeField] private float rotationSpeed = 30f;
 
     // Dictionary untuk mapping nama panel ke GameObject
@@ -58,6 +62,7 @@ public class GameManager : MonoBehaviour
     private bool displayScreen = false;
     private bool isAnimating = false;
     private bool isSwitchingPanel = false;
+    private bool isEn = false;
     private Coroutine rotationCoroutine;
 
     void Start()
@@ -78,11 +83,25 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKey(KeyCode.Space)){
+        if (Input.GetKey(KeyCode.Space))
+        {
             PlayerPrefs.DeleteAll();
         }
     }
     #region Switch Display Screen
+    public void SetSwitchLanguage()
+    {
+        idTxt.SetActive(!switchLanguage.isOn);
+        enTxt.SetActive(switchLanguage.isOn);
+        isEn = switchLanguage.isOn;
+
+        // Perbarui deskripsi jika OpenDeskripsi memiliki nilai
+        if (!string.IsNullOrEmpty(OpenDeskripsi))
+        {
+            SetDeskripsiTxt(OpenDeskripsi);
+        }
+    }
+
     public void SetSwitchAnim()
     {
         riverObj.SetBool("PlayAnim", animSwitch.isOn);
@@ -199,20 +218,40 @@ public class GameManager : MonoBehaviour
     {
         OpenDeskripsi = name;
 
-        if (OpenDeskripsi == "River")
+        //RIVER
+        if (OpenDeskripsi == "River" && !isEn)
         {
             tittledeskripsiTxt.text = "River";
             deskripsiTxt.text = riverDescID;
         }
-        else if (OpenDeskripsi == "Beach")
+        else if (OpenDeskripsi == "River" && isEn)
+        {
+            tittledeskripsiTxt.text = "River";
+            deskripsiTxt.text = riverDescEN;
+        }
+
+        //BEACH
+        if (OpenDeskripsi == "Beach" && !isEn)
         {
             tittledeskripsiTxt.text = "Beach";
             deskripsiTxt.text = beachDescID;
         }
-        else if (OpenDeskripsi == "Iceberg")
+        else if (OpenDeskripsi == "Beach" && isEn)
+        {
+            tittledeskripsiTxt.text = "Beach";
+            deskripsiTxt.text = beachDescEN;
+        }
+
+        //ICE
+        if (OpenDeskripsi == "Iceberg" && !isEn)
         {
             tittledeskripsiTxt.text = "IceBerg";
             deskripsiTxt.text = iceDescID;
+        }
+        else if (OpenDeskripsi == "Iceberg" && isEn)
+        {
+            tittledeskripsiTxt.text = "IceBerg";
+            deskripsiTxt.text = iceDescEN;
         }
     }
     #endregion
@@ -251,6 +290,10 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
+    public void MainMenu()
+    {
+        SceneManager.LoadScene(0);
+    }
     /// <summary>
     /// Fungsi untuk mengatur panel mana yang aktif setelah jeda waktu.
     /// </summary>

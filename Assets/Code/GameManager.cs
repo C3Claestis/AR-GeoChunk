@@ -104,6 +104,10 @@ public class GameManager : MonoBehaviour
 
     public void SetSwitchAnim()
     {
+        riverObj.enabled = animSwitch.isOn;
+        beachObj.enabled = animSwitch.isOn;
+        iceburgObj.enabled = animSwitch.isOn;
+
         riverObj.SetBool("PlayAnim", animSwitch.isOn);
         beachObj.SetBool("PlayAnim", animSwitch.isOn);
         iceburgObj.SetBool("PlayAnim", animSwitch.isOn);

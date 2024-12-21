@@ -221,7 +221,7 @@ public class GameManager : MonoBehaviour
         //RIVER
         if (OpenDeskripsi == "River" && !isEn)
         {
-            tittledeskripsiTxt.text = "River";
+            tittledeskripsiTxt.text = "Sungai";
             deskripsiTxt.text = riverDescID;
         }
         else if (OpenDeskripsi == "River" && isEn)
@@ -233,7 +233,7 @@ public class GameManager : MonoBehaviour
         //BEACH
         if (OpenDeskripsi == "Beach" && !isEn)
         {
-            tittledeskripsiTxt.text = "Beach";
+            tittledeskripsiTxt.text = "Pantai";
             deskripsiTxt.text = beachDescID;
         }
         else if (OpenDeskripsi == "Beach" && isEn)
@@ -245,7 +245,7 @@ public class GameManager : MonoBehaviour
         //ICE
         if (OpenDeskripsi == "Iceberg" && !isEn)
         {
-            tittledeskripsiTxt.text = "IceBerg";
+            tittledeskripsiTxt.text = "Gunung Es";
             deskripsiTxt.text = iceDescID;
         }
         else if (OpenDeskripsi == "Iceberg" && isEn)

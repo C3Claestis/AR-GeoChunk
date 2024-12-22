@@ -80,14 +80,6 @@ public class GameManager : MonoBehaviour
             { "ShowSaved", panelShowSaved },
         };
     }
-
-    void Update()
-    {
-        if (Input.GetKey(KeyCode.Space))
-        {
-            PlayerPrefs.DeleteAll();
-        }
-    }
     #region Switch Display Screen
     public void SetSwitchLanguage()
     {
